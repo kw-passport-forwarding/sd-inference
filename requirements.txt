@@ -1,0 +1,10 @@
+python-dotenv
+requests
+fastapi
+uvicorn
+diffusers[torch]
+transformers
+accelerate
+safetensors
+omegaconf
+realesrgan
