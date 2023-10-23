@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "sd-inference"
+version = "0.1.0"
+description = ""
+authors = ["FKgk <rhkd865@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "^1.0.0"
+requests = "^2.31.0"
+fastapi = "^0.104.0"
+uvicorn = "^0.23.2"
+transformers = "^4.34.1"
+safetensors = "^0.4.0"
+omegaconf = "^2.3.0"
+realesrgan = "^0.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
