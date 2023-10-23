@@ -2,3 +2,5 @@
 /logs
 /hub
 /models
+/.idea
+*/__pycache__
