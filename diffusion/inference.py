@@ -1,4 +1,7 @@
 import diffusers
+from storage.image_storage import Boto3Client
+import hashlib
+import base64
 
 class Inference:
     def __init__(self) -> None:
@@ -21,8 +24,10 @@ class Inference:
             "guidance_scale",
             "num_images_per_prompt",
             "strength",
-            "image"
+            # "image"
             ]
+        
+        self.boto3 = Boto3Client()
     
     def init_general_arg(
         self,
@@ -58,13 +63,17 @@ class Inference:
             scheduler=self.scheduler_dict[arg_dict["scheduler"]],
         )
         pipe.safety_checker = None
+        
+        pipe_arg_dict = {arg: arg_dict[arg] for arg in self.required_arg_list}
+        pipe_arg_dict["image"] = self.boto3.download(arg_dict["image"])
 
-        pipe_arg_dict = {arg: arg_dict[arg] for arg in self.required_arg_list} # TODO: Get image from s3
         image_list = pipe.to("cuda")(**pipe_arg_dict).images
         arg_dict.update(pipe_arg_dict)
 
-        for index, image in enumerate(image_list):
-            image.save(f"{self.output_dir}/{index}.png") # TODO: Sending image via s3
+        arg_dict["image_path"] = []
+        for image in image_list:
+            image_hash = hashlib.md5(base64.b64decode(image)).hexdigest()
+            arg_dict["image_path"].append(self.boto3.upload(image, f"{image_hash}.png"))
         
         del arg_dict["torch_dtype"]
         if type(arg_dict["image"]) != str: del arg_dict["image"] # TODO: Find better way to handle
