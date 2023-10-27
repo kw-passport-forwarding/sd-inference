@@ -19,16 +19,16 @@ Stable diffusion diffusers img2img
 ## output
 ```json
 {
-    "model_id": string,
-    "is_xl": bool,
-    "image": string,
-    "prompt": string,
-    "negative_prompt": string,
-    "num_inference_steps": int,
-    "height": int,
-    "width": int,
-    "guidance_scale": int,
-    "num_images_per_prompt": int,
+    "model_id": "string",
+    "is_xl": "bool",
+    "image": "string",
+    "prompt": "string",
+    "negative_prompt": "string",
+    "num_inference_steps": "int",
+    "height": "int",
+    "width": "int",
+    "guidance_scale": "int",
+    "num_images_per_prompt": "int",
 
-    "image_path": list of string
+    "image_path": "list of string"
 }
