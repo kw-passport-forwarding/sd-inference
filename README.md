@@ -16,7 +16,7 @@ Stable diffusion diffusers img2img
     "num_images_per_prompt": 4,
 }
 ```
-# output
+## output
 ```json
 {
     "model_id": string,
