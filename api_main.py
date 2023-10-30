@@ -35,4 +35,4 @@ if __name__ == "__main__":
     req = InferenceRequest()
     app.include_router(req.router)
     
-    uvicorn.run(app, host="0.0.0.0", port=5000)
+    uvicorn.run(app, host="0.0.0.0", port=3000)

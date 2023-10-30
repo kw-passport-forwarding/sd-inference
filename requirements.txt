@@ -4,4 +4,3 @@ uvicorn
 diffusers[torch]
 starlette
 boto3
-hashlib

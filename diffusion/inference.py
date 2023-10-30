@@ -2,10 +2,11 @@ import diffusers
 from storage.image_storage import Boto3Client
 import hashlib
 import base64
+import torch
 
 class Inference:
     def __init__(self) -> None:
-        self.base_ckpt_dir = "./models/Stable-diffusion"
+        self.base_ckpt_path = "./models/Stable-diffusion/<model_name>" # TODO: add model
         self.output_dir = "./output"
         
         self.pipeline_dict = {
@@ -28,6 +29,16 @@ class Inference:
             ]
         
         self.boto3 = Boto3Client()
+
+        self.pipe = diffusers.StableDiffusionXLImg2ImgPipeline.from_single_file(
+            pretrained_model_link_or_path=f"{self.base_ckpt_path}.safetensors",
+            torch_dtype=torch.float16,
+            resume_download=True,
+            use_safetensors=True,
+            scheduler=diffusers.EulerAncestralDiscreteScheduler(),
+        )
+        self.pipe.safety_checker = None
+        self.pipe.to("cuda")
     
     def init_general_arg(
         self,
@@ -51,23 +62,11 @@ class Inference:
         ) -> None:
         arg_dict = self.init_general_arg(**arg_dict)
 
-        pipeline_name = f"{arg_dict['purpose']}_xl" if arg_dict["is_xl"] else arg_dict["purpose"] 
-        
-        pipeline = self.pipeline_dict[pipeline_name]
-        pipe = pipeline.from_single_file(
-            pretrained_model_link_or_path=f"{self.base_ckpt_dir}/{arg_dict['model_id']}.safetensors",
-            torch_dtype=arg_dict["torch_dtype"],
-            # local_files_only=arg_dict["local_files_only"], # TODO: Model cache?
-            resume_download=True,
-            use_safetensors=arg_dict["use_safetensors"],
-            scheduler=self.scheduler_dict[arg_dict["scheduler"]],
-        )
-        pipe.safety_checker = None
         
         pipe_arg_dict = {arg: arg_dict[arg] for arg in self.required_arg_list}
         pipe_arg_dict["image"] = self.boto3.download(arg_dict["image"])
 
-        image_list = pipe.to("cuda")(**pipe_arg_dict).images
+        image_list = self.pipe(**pipe_arg_dict).images
         arg_dict.update(pipe_arg_dict)
 
         arg_dict["image_path"] = []
